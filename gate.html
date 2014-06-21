@@ -7,22 +7,18 @@ div {
 	display: table;
 	margin: 0 auto;
 }
-h1 {
-	text-align: center;
-}
 </style>
 </head>
 <body>
 <div>
 <h1>? Covert BOX ?</h1>
-<form action="{{upload_url}}" method="POST" enctype="multipart/form-data">
-	<h3>Upload File: <input type="file" name="file" /></h3>
+<form action="/covert_room" method="POST">
 	<h3>retrieval key: <input type="text" name="user_key" /></h3>
-	<input type="submit" name="submit" value="Upload" />
+	<input type="submit" name="submit" value="Open" />
 </form>
 </div>
 <div>
-	<h2><a href="/download">Go to Download Page</a></h2>
+	<h2><a href="/">Go to Upload Page</a></h2>
 </div>
 </body>
 </html>
