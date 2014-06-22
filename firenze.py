@@ -34,7 +34,7 @@ class MainHandler(webapp2.RequestHandler):
 	def get(self):
 		upload_url = blobstore.create_upload_url('/upload')
 
-		page = JINJA_ENVIRONMENT.get_template('pages/index.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/boxing.html')
 
 		self.response.out.write(page.render({'upload_url': upload_url}))
 
@@ -83,23 +83,21 @@ your message: {}
 			box_instance.put()
 			redirect_url = '/done'
 
-		self.redirect(redirect_url)
+		page_value = {
+				'file_name': box_instance.file_name,
+				'expiry_date': box_instance.expiry_date
+		}
 
-
-class DoneHandler(webapp2.RequestHandler):
-	def get(self):
-		page = JINJA_ENVIRONMENT.get_template('pages/done.html')
-
-
-		self.response.out.write(page.render({}))
+		page = JINJA_ENVIRONMENT.get_template('pages/boxed.html')
+		self.response.out.write(page.render(page_value))
 
 class DownloadHandler(webapp2.RequestHandler):
 	def get(self):
-		page = JINJA_ENVIRONMENT.get_template('pages/gate.html')
-		self.response.out.write(page.render({}))
+		page = JINJA_ENVIRONMENT.get_template('pages/opening.html')
+		self.response.out.write(page.render())
 
 	def post(self):
-		page = JINJA_ENVIRONMENT.get_template('pages/download.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/opened.html')
 
 		user_key = self.request.get('user_key')
 
@@ -136,7 +134,7 @@ class DeleteHandler(blobstore_handlers.BlobstoreDownloadHandler):
 		box_instance.key.delete()
 		blob_info.delete()
 
-		self.redirect('/done')
+		self.redirect('/opening')
 
 class ErrorHandler(webapp2.RequestHandler):
 	def get(self):
@@ -160,17 +158,17 @@ class GarbageFlushHandler(webapp2.RequestHandler):
 			box_instance.key.delete()
 			i.delete()
 
-		page = JINJA_ENVIRONMENT.get_template('pages/garbage.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/gf.html')
 		self.response.out.write(page.render(page_value))
 
-application = webapp2.WSGIApplication([('/', MainHandler),
+application = webapp2.WSGIApplication([
+	('/', MainHandler),
 	('/error', ErrorHandler),
 	('/upload', UploadHandler),
-	('/done', DoneHandler),
-	('/download', DownloadHandler),
-	('/covert_room', DownloadHandler),
-	('/serve/([^/]+)?', ServeHandler),
-	('/delete/([^/]+)?', DeleteHandler),
+	('/opening', DownloadHandler),
+	('/opened', DownloadHandler),
+	('/open/([^/]+)?', ServeHandler),
+	('/trash/([^/]+)?', DeleteHandler),
 	('/gf', GarbageFlushHandler),
 	], debug=True)
 
