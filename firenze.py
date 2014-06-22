@@ -26,6 +26,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class CovertBox(ndb.Model):
 	blob_key = ndb.BlobKeyProperty()
 	file_name = ndb.StringProperty()
+	one_time = ndb.BooleanProperty()
 	expiry_date = ndb.DateTimeProperty()
 
 class MainHandler(webapp2.RequestHandler):
@@ -41,6 +42,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
 		user_key = self.request.get('user_key')
 		email = self.request.get('email')
+		one_time = self.request.get('one_time')
 		
 		redirect_url = '/error'
 		retrieval_key = None
@@ -71,6 +73,7 @@ retrieval key: {}
 			box_instance.blob_key = upload_files[0].key()
 			box_instance.file_name = upload_files[0].filename
 			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
+			box_instance.one_time = True if one_time else False
 
 			box_instance.put()
 			redirect_url = '/done'
@@ -111,10 +114,12 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 		resource = str(urllib.unquote(resource))
 		blob_info = blobstore.BlobInfo.get(resource)
 
-		box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
-
-
 		self.send_blob(blob_info, save_as=blob_info.filename)
+
+		box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+		if box_instance.one_time:
+			box_instance.expiry_date = datetime.now() - timedelta(hours=25)
+			box_instance.put()
 
 class DeleteHandler(blobstore_handlers.BlobstoreDownloadHandler):
 	def get(self, resource):

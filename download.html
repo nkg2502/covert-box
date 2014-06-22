@@ -16,8 +16,12 @@ div {
 <ol>
 {% for i in list %}
 <li>
-		<h2><a href="/serve/{{i.blob_key}}">{{i.file_name}}</a></h2>
-		<h5>{{i.expiry_date}}</h5>
+		<h2><a href="/serve/{{i.blob_key}}">{{i.file_name}}</a>
+		{% if i.one_time %}
+		[only one time]
+		{% endif %}
+		</h2>
+		<h5>Expire: {{i.expiry_date}}</h5>
 		<h5><a href="/delete/{{i.blob_key}}">delete</a></h5>
 </li>
 {% endfor %}
