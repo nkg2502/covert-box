@@ -42,6 +42,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		user_key = self.request.get('user_key')
 		email = self.request.get('email')
 		
+		redirect_url = '/error'
 		retrieval_key = None
 
 		# email address validation
@@ -63,15 +64,19 @@ retrieval key: {}
 		elif '' != user_key: # user_key validation
 			retrieval_key = user_key
 
-		box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
+		if len(upload_files):
 
-		box_instance.key = upload_files[0].key()
-		box_instance.file_name = upload_files[0].filename
-		box_instance.expiry_date = datetime.now() + timedelta(hours=24)
+			box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
 
-		box_instance.put()
+			box_instance.key = upload_files[0].key()
+			box_instance.file_name = upload_files[0].filename
+			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
 
-		self.redirect('/done')
+			box_instance.put()
+			redirect_url = '/done'
+
+		self.redirect(redirect_url)
+
 
 class DoneHandler(webapp2.RequestHandler):
 	def get(self):
@@ -106,10 +111,17 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 		blob_info = blobstore.BlobInfo.get(resource)
 		self.send_blob(blob_info, save_as=blob_info.filename)
 
+class ErrorHandler(webapp2.RequestHandler):
+	def get(self):
+		page = JINJA_ENVIRONMENT.get_template('error.html')
+		self.response.out.write(page.render({}))
+
 application = webapp2.WSGIApplication([('/', MainHandler),
+	('/error', ErrorHandler),
 	('/upload', UploadHandler),
 	('/done', DoneHandler),
 	('/download', DownloadHandler),
 	('/covert_room', DownloadHandler),
 	('/serve/([^/]+)?', ServeHandler),
 	], debug=True)
+
