@@ -34,9 +34,9 @@ class MainHandler(webapp2.RequestHandler):
 	def get(self):
 		upload_url = blobstore.create_upload_url('/upload')
 
-		index_page = JINJA_ENVIRONMENT.get_template('index.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/index.html')
 
-		self.response.out.write(index_page.render({'upload_url': upload_url}))
+		self.response.out.write(page.render({'upload_url': upload_url}))
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 	def post(self):
@@ -88,18 +88,18 @@ your message: {}
 
 class DoneHandler(webapp2.RequestHandler):
 	def get(self):
-		done_page = JINJA_ENVIRONMENT.get_template('done.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/done.html')
 
 
-		self.response.out.write(done_page.render({}))
+		self.response.out.write(page.render({}))
 
 class DownloadHandler(webapp2.RequestHandler):
 	def get(self):
-		page = JINJA_ENVIRONMENT.get_template('gate.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/gate.html')
 		self.response.out.write(page.render({}))
 
 	def post(self):
-		page = JINJA_ENVIRONMENT.get_template('download.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/download.html')
 
 		user_key = self.request.get('user_key')
 
@@ -140,7 +140,7 @@ class DeleteHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
 class ErrorHandler(webapp2.RequestHandler):
 	def get(self):
-		page = JINJA_ENVIRONMENT.get_template('error.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/error.html')
 		self.response.out.write(page.render({}))
 
 class GarbageFlushHandler(webapp2.RequestHandler):
@@ -160,7 +160,7 @@ class GarbageFlushHandler(webapp2.RequestHandler):
 			box_instance.key.delete()
 			i.delete()
 
-		page = JINJA_ENVIRONMENT.get_template('garbage.html')
+		page = JINJA_ENVIRONMENT.get_template('pages/garbage.html')
 		self.response.out.write(page.render(page_value))
 
 application = webapp2.WSGIApplication([('/', MainHandler),
