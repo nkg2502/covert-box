@@ -15,11 +15,18 @@ h1 {
 <body>
 <div>
 <h1>? Covert BOX ?</h1>
-<h1>Error</h1>
+<h1>Garbage flushed!</h1>
 </div>
 <div>
-	<h2><a href="/">Go to Upload Page</a></h2>
-	<h2><a href="/download">Go to Download Page</a></h2>
+<ol>
+{% for i in list %}
+<li>
+		<h2>{{i.filename}}</h2>
+		<h5>{{i.creation}}</h5>
+</li>
+{% endfor %}
+</ol>
+
 </div>
 </body>
 </html>

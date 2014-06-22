@@ -1,10 +1,13 @@
 application: covert-box
-version: 1
+version: 2
 runtime: python27
 api_version: 1
 threadsafe: true
 
 handlers:
+- url: /js
+  static_dir: js
+
 - url: /.*
   script: firenze.application
 

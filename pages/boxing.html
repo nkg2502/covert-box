@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Covert-Box</title>
+
+<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="http://getbootstrap.com/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="http://getbootstrap.com/examples/theme/theme.css" rel="stylesheet">
+
+<style id="holderjs-style" type="text/css"></style>
+
+</head>
+
+<body role="document">
+
+<!-- Fixed navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Covert-Box</a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Upload</a></li>
+				<li><a href="/opening">Download</a></li>
+			</ul>
+		</div><!--/.nav-collapse -->
+	</div>
+</div>
+
+<div class="container theme-showcase" role="main">
+
+	<div class="jumbotron">
+		<h1>? Covert-Box ?</h1>
+		<p>No more login!</p>
+		<p>Just upload and download!</p>
+	</div>
+
+
+	<form role="form" action="{{upload_url}}" method="POST" enctype="multipart/form-data">
+
+		<div class="form-group">
+			<label for="upload_file">Upload file</label>
+			<input type="file" name="file" id="upload_file">
+		</div>
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" name="one_time"> Download only once
+			</label>
+		</div>
+		<div class="form-group">
+			<div class="btn-group">
+				<button type="button" class="btn btn-warning" id="normal_button">Normal</button>
+				<button type="button" class="btn btn-success" id="secure_button">Secure</button>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<input type="password" class="form-control" id="user_key_input" name="user_key" placeholder="Retrieval key">
+		</div>
+
+		<div class="form-group has-success">
+			<input type="hidden" class="form-control" id="email_input" name="email" placeholder="email@email.com">
+		</div>
+
+		<div class="form-group">
+			<label for="msg_textarea">Message(option)</label>
+			<textarea class="form-control" rows="3" name="msg" id="msg_textarea"></textarea>
+		</div>
+
+		<button type="submit" class="btn btn-primary btn-lg btn-block" name="submit" id="submit_button">Boxing</button>
+	</form>
+
+</div> <!-- /container -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="/js/boxing.js"></script>
+
+</body></html>
+{% endautoescape %}
