@@ -21,8 +21,13 @@ div {
 		[only one time]
 		{% endif %}
 		</h2>
-		<h5>Expire: {{i.expiry_date}}</h5>
+		<p>
+		{% if i.msg %}
+		{{i.msg}}
+		{% endif %}
+		</p>
 		<h5><a href="/delete/{{i.blob_key}}">delete</a></h5>
+		<h5>Expire: {{i.expiry_date}}</h5>
 </li>
 {% endfor %}
 </ol>

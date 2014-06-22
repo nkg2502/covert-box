@@ -10,6 +10,9 @@ div {
 h1 {
 	text-align: center;
 }
+textarea {
+	width: 100%;
+}
 </style>
 </head>
 <body>
@@ -20,7 +23,9 @@ h1 {
 	<h3>retrieval key: <input type="text" name="user_key" /></h3>
 	<h3>email (opt): <input type="text" name="email" /></h3>
 	<h3><input type="checkbox" name="one_time" />one time download</h3>
-	<input type="submit" name="submit" value="Upload" />
+	<p>optional message</p>
+	<textarea rows="4" name="msg" ></textarea>
+	<p><input type="submit" name="submit" value="Upload" /></p>
 </form>
 </div>
 <div>

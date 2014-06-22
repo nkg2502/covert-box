@@ -27,6 +27,7 @@ class CovertBox(ndb.Model):
 	blob_key = ndb.BlobKeyProperty()
 	file_name = ndb.StringProperty()
 	one_time = ndb.BooleanProperty()
+	msg = ndb.StringProperty()
 	expiry_date = ndb.DateTimeProperty()
 
 class MainHandler(webapp2.RequestHandler):
@@ -43,6 +44,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		user_key = self.request.get('user_key')
 		email = self.request.get('email')
 		one_time = self.request.get('one_time')
+		msg = self.request.get('msg')
 		
 		redirect_url = '/error'
 		retrieval_key = None
@@ -58,8 +60,10 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 			message.to = "<" + email + ">"
 			message.body = """Dear You,
 retrieval key: {}
+
+your message: {}
 ? Covert-Box ?
-""".format(retrieval_key)
+""".format(retrieval_key, msg)
 
 			message.send()
 
@@ -72,8 +76,9 @@ retrieval key: {}
 
 			box_instance.blob_key = upload_files[0].key()
 			box_instance.file_name = upload_files[0].filename
-			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
+			box_instance.msg = msg
 			box_instance.one_time = True if one_time else False
+			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
 
 			box_instance.put()
 			redirect_url = '/done'
