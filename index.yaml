@@ -1,0 +1,5 @@
+indexes:
+- kind: CovertBox
+  ancestor: yes
+  properties:
+  - name: expiry_date
