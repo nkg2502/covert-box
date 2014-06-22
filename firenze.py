@@ -24,7 +24,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 		autoescape = True)
 
 class CovertBox(ndb.Model):
-	key = ndb.BlobKeyProperty()
+	blob_key = ndb.BlobKeyProperty()
 	file_name = ndb.StringProperty()
 	expiry_date = ndb.DateTimeProperty()
 
@@ -68,7 +68,7 @@ retrieval key: {}
 
 			box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
 
-			box_instance.key = upload_files[0].key()
+			box_instance.blob_key = upload_files[0].key()
 			box_instance.file_name = upload_files[0].filename
 			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
 
@@ -109,12 +109,34 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 	def get(self, resource):
 		resource = str(urllib.unquote(resource))
 		blob_info = blobstore.BlobInfo.get(resource)
+
+		box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+
+
 		self.send_blob(blob_info, save_as=blob_info.filename)
+
+class DeleteHandler(blobstore_handlers.BlobstoreDownloadHandler):
+	def get(self, resource):
+		resource = str(urllib.unquote(resource))
+		blob_info = blobstore.BlobInfo.get(resource)
+
+		box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+		
+		box_instance.key.delete()
+		blob_info.delete()
+
+		self.redirect('/done')
 
 class ErrorHandler(webapp2.RequestHandler):
 	def get(self):
 		page = JINJA_ENVIRONMENT.get_template('error.html')
 		self.response.out.write(page.render({}))
+
+class GarbageFlushHandler(webapp2.RequestHandler):
+	def get(self):
+		page = JINJA_ENVIRONMENT.get_template('error.html')
+		self.response.out.write(page.render({}))
+		blobstore.BlobInfo.all().filter('creation <', datetime.now()).fetch(None)
 
 application = webapp2.WSGIApplication([('/', MainHandler),
 	('/error', ErrorHandler),
@@ -123,5 +145,6 @@ application = webapp2.WSGIApplication([('/', MainHandler),
 	('/download', DownloadHandler),
 	('/covert_room', DownloadHandler),
 	('/serve/([^/]+)?', ServeHandler),
+	('/delete/([^/]+)?', DeleteHandler),
 	], debug=True)
 
