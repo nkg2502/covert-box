@@ -7,27 +7,31 @@ div {
 	display: table;
 	margin: 0 auto;
 }
+h1 {
+	text-align: center;
+}
 </style>
 </head>
 <body>
 <div>
 <h1>? Covert BOX ?</h1>
-<h5>{{time}}</h5>
+<h1>Garbage flushed!</h1>
+</div>
+<div>
 <ol>
 {% for i in list %}
 <li>
-		<h2><a href="/serve/{{i.blob_key}}">{{i.file_name}}</a></h2>
-		<h5>{{i.expiry_date}}</h5>
-		<h5><a href="/delete/{{i.blob_key}}">delete</a></h5>
+		<h2>{{i.filename}}</h2>
+		<h5>{{i.creation}}</h5>
 </li>
 {% endfor %}
 </ol>
+
 </div>
 <div>
 	<h2><a href="/">Go to Upload Page</a></h2>
 	<h2><a href="/download">Go to Download Page</a></h2>
 </div>
-
 </body>
 </html>
 {% endautoescape %}

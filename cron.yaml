@@ -1,0 +1,4 @@
+cron:
+- description: daily garbage flush job
+  url: /gf
+  schedule: every 24 hours 

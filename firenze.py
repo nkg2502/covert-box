@@ -99,7 +99,8 @@ class DownloadHandler(webapp2.RequestHandler):
 		box_list = box_query.fetch()
 
 		page_value = {
-				'list': box_list 
+				'list': box_list,
+				'time': datetime.now()
 		}
 
 		self.response.out.write(page.render(page_value))
@@ -134,9 +135,23 @@ class ErrorHandler(webapp2.RequestHandler):
 
 class GarbageFlushHandler(webapp2.RequestHandler):
 	def get(self):
-		page = JINJA_ENVIRONMENT.get_template('error.html')
-		self.response.out.write(page.render({}))
-		blobstore.BlobInfo.all().filter('creation <', datetime.now()).fetch(None)
+
+		# used +7 hours time
+		# because blob server time and data store time is different
+		garbage_list = blobstore.BlobInfo.all().filter('creation <', datetime.now() + timedelta(hours=7) - timedelta(hours=24)).fetch(None)
+
+		page_value = {
+				'list': garbage_list
+		}
+
+		for i in garbage_list:
+			box_instance = CovertBox.query(CovertBox.blob_key == i.key()).get()
+
+			box_instance.key.delete()
+			i.delete()
+
+		page = JINJA_ENVIRONMENT.get_template('garbage.html')
+		self.response.out.write(page.render(page_value))
 
 application = webapp2.WSGIApplication([('/', MainHandler),
 	('/error', ErrorHandler),
@@ -146,5 +161,6 @@ application = webapp2.WSGIApplication([('/', MainHandler),
 	('/covert_room', DownloadHandler),
 	('/serve/([^/]+)?', ServeHandler),
 	('/delete/([^/]+)?', DeleteHandler),
+	('/gf', GarbageFlushHandler),
 	], debug=True)
 
