@@ -5,6 +5,8 @@ import os
 import urllib
 import hashlib
 import uuid
+from datetime import datetime
+from datetime import timedelta 
 
 from google.appengine.ext import ndb
 
@@ -24,6 +26,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class CovertBox(ndb.Model):
 	key = ndb.BlobKeyProperty()
 	file_name = ndb.StringProperty()
+	expiry_date = ndb.DateTimeProperty()
 
 class MainHandler(webapp2.RequestHandler):
 	def get(self):
@@ -64,6 +67,7 @@ retrieval key: {}
 
 		box_instance.key = upload_files[0].key()
 		box_instance.file_name = upload_files[0].filename
+		box_instance.expiry_date = datetime.now() + timedelta(hours=24)
 
 		box_instance.put()
 
@@ -86,7 +90,7 @@ class DownloadHandler(webapp2.RequestHandler):
 
 		user_key = self.request.get('user_key')
 
-		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', user_key))
+		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', user_key), filters=CovertBox.expiry_date > datetime.now())
 		box_list = box_query.fetch()
 
 		page_value = {
