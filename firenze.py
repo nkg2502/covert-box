@@ -51,7 +51,11 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 		# email address validation
 		if '' != email:
-			retrieval_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email).hexdigest()
+
+            user_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email).hexdigest()
+
+			salt = hashlib.sha512(user_key + user_key).hexdigest()
+			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
 
 			message = mail.EmailMessage(
 					sender="? Covert-Box ?<covert-box@appspot.gserviceaccount.com>",
@@ -63,12 +67,14 @@ retrieval key: {}
 
 your message: {}
 ? Covert-Box ?
-""".format(retrieval_key, msg)
+""".format(user_key, msg)
 
 			message.send()
 
 		elif '' != user_key: # user_key validation
-			retrieval_key = user_key
+
+			salt = hashlib.sha512(user_key + user_key).hexdigest()
+			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
 
 		if len(upload_files):
 
@@ -100,8 +106,11 @@ class DownloadHandler(webapp2.RequestHandler):
 		page = JINJA_ENVIRONMENT.get_template('pages/opened.html')
 
 		user_key = self.request.get('user_key')
+		
+		salt = hashlib.sha512(user_key + user_key).hexdigest()
+		retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
 
-		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', user_key), filters=CovertBox.expiry_date > datetime.now())
+		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', str(retrieval_key)), filters=CovertBox.expiry_date > datetime.now())
 		box_list = box_query.fetch()
 
 		page_value = {
