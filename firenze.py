@@ -52,7 +52,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		# email address validation
 		if '' != email:
 
-            user_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email).hexdigest()
+			user_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email).hexdigest()
 
 			salt = hashlib.sha512(user_key + user_key).hexdigest()
 			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
