@@ -16,8 +16,10 @@
 	<div class="jumbotron">
 		<h1>? Covert-Box ?</h1>
 		<p>Boxing Complete!</p>
-		<p>{{file_name}}</p>
-		<p>Expire: {{expiry_date}}</p>
+		{% for i in uploaded_list %}
+		<p>{{i.name}}</p>
+		<p>Expire: {{i.expiry_date}}</p>
+		{% endfor %}
 	</div>
 
 </div> <!-- /container -->

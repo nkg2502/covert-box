@@ -76,22 +76,25 @@ your message: {}
 			salt = hashlib.sha512(user_key + user_key).hexdigest()
 			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
 
-		if len(upload_files):
-
+		uploaded_files = []
+		for f in upload_files:
 			box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
 
-			box_instance.blob_key = upload_files[0].key()
-			box_instance.file_name = upload_files[0].filename
+			box_instance.blob_key = f.key()
+			box_instance.file_name = f.filename
 			box_instance.msg = msg
 			box_instance.one_time = True if one_time else False
 			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
 
 			box_instance.put()
-			redirect_url = '/done'
+
+			uploaded_files.append({
+				'name': box_instance.file_name, 
+				'expiry_date': box_instance.expiry_date
+			})
 
 		page_value = {
-				'file_name': box_instance.file_name,
-				'expiry_date': box_instance.expiry_date
+				'uploaded_list': uploaded_files
 		}
 
 		page = JINJA_ENVIRONMENT.get_template('pages/boxed.html')
