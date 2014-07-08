@@ -123,28 +123,38 @@ class DownloadHandler(webapp2.RequestHandler):
 
 		self.response.out.write(page.render(page_value))
 
-
 class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 	def get(self, resource):
 		resource = str(urllib.unquote(resource))
 		blob_info = blobstore.BlobInfo.get(resource)
 
-		self.send_blob(blob_info, save_as=blob_info.filename)
+		is_error = False
+		try:
+			self.send_blob(blob_info, save_as=blob_info.filename)
 
-		box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
-		if box_instance.one_time:
-			box_instance.expiry_date = datetime.now() - timedelta(hours=25)
-			box_instance.put()
+			box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+			if box_instance.one_time:
+				box_instance.expiry_date = datetime.now() - timedelta(hours=25)
+				box_instance.put()
+
+		except:
+			is_error = True
+
+		if is_error:
+			self.redirect('/error')
 
 class DeleteHandler(blobstore_handlers.BlobstoreDownloadHandler):
 	def get(self, resource):
 		resource = str(urllib.unquote(resource))
 		blob_info = blobstore.BlobInfo.get(resource)
 
-		box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
-		
-		box_instance.key.delete()
-		blob_info.delete()
+		try:
+			box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+
+			box_instance.key.delete()
+			blob_info.delete()
+		except:
+			pass
 
 		self.redirect('/opening')
 
