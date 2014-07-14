@@ -177,7 +177,11 @@ class GarbageFlushHandler(webapp2.RequestHandler):
 		for i in garbage_list:
 			box_instance = CovertBox.query(CovertBox.blob_key == i.key()).get()
 
-			box_instance.key.delete()
+			try:
+				box_instance.key.delete()
+			except AttributeError:
+				pass
+
 			i.delete()
 
 		page = JINJA_ENVIRONMENT.get_template('pages/gf.html')
