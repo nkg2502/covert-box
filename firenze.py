@@ -50,7 +50,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		retrieval_key = None
 
 		# email address validation
-        message = None
+		message = None
 		if '' != email:
 
 			user_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email).hexdigest()
@@ -99,10 +99,10 @@ your message: {}
 		page = JINJA_ENVIRONMENT.get_template('pages/boxed.html')
 		self.response.out.write(page.render(page_value))
 
-        try:
-	        message.send()
-        except:
-            pass
+		try:
+			message.send()
+		except:
+			pass
 
 class DownloadHandler(webapp2.RequestHandler):
 	def get(self):
