@@ -87,10 +87,8 @@ your message: {}
 
 			encoded_str = email.header.decode_header(file_name)
 
-			if not encoded_str[0][1]:
+			if encoded_str[0][1]:
 				file_name = encoded_str[0][0].decode(encoded_str[0][1])
-			else:
-				file_name = 'e.' + file_name
 
 			box_instance.blob_key = f.key()
 			box_instance.file_name = file_name
