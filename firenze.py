@@ -81,8 +81,17 @@ your message: {}
 		for f in upload_files:
 			box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
 
+			file_name = f.filename
+			try:
+				encoded_str = email.header.decode_header(box_instance.file_name)
+
+				if not encoded_str[0][1]:
+					file_name = encoded_str[0][0].decode(encoded_str[0][1])
+			except:
+				pass
+
 			box_instance.blob_key = f.key()
-			box_instance.file_name = f.filename
+			box_instance.file_name = file_name
 			box_instance.msg = msg
 			box_instance.one_time = True if one_time else False
 			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
@@ -90,7 +99,7 @@ your message: {}
 			box_instance.put()
 
 			uploaded_files.append({
-				'name': box_instance.file_name, 
+				'name': file_name, 
 				'expiry_date': box_instance.expiry_date
 			})
 
