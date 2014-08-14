@@ -46,7 +46,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 	def post(self):
 		upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
 		user_key = self.request.get('user_key')
-		email = self.request.get('email')
+		email_addr = self.request.get('email')
 		one_time = self.request.get('one_time')
 		msg = self.request.get('msg')
 		
@@ -55,9 +55,9 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 		# email address validation
 		message = None
-		if '' != email:
+		if '' != email_addr:
 
-			user_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email).hexdigest()
+			user_key = hashlib.sha512(str(uuid.uuid4().get_hex()) + email_addr).hexdigest()
 
 			salt = hashlib.sha512(user_key + user_key).hexdigest()
 			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
@@ -66,7 +66,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 					sender="? Covert-Box ?<covert-box@appspot.gserviceaccount.com>",
 					subject='"{}" has been uploaded'.format(upload_files[0].filename))
 
-			message.to = "<" + email + ">"
+			message.to = "<" + email_addr + ">"
 			message.body = """Dear You,
 retrieval key: {}
 
@@ -84,7 +84,7 @@ your message: {}
 			box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
 
 			file_name = f.filename
-			
+
 			encoded_str = email.header.decode_header(file_name)
 
 			if not encoded_str[0][1]:
