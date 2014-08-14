@@ -8,6 +8,8 @@ import uuid
 from datetime import datetime
 from datetime import timedelta 
 
+import logging
+
 from google.appengine.ext import ndb
 
 from google.appengine.ext import blobstore
@@ -152,11 +154,18 @@ class DeleteHandler(blobstore_handlers.BlobstoreDownloadHandler):
 		resource = str(urllib.unquote(resource))
 		blob_info = blobstore.BlobInfo.get(resource)
 
-		try:
-			box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+		box_instance = None
 
-			box_instance.key.delete()
+		if blob_info:
+			box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+		
+		try:
 			blob_info.delete()
+		except:
+			pass
+
+		try:
+			box_instance.key.delete()
 		except:
 			pass
 
@@ -187,6 +196,13 @@ class GarbageFlushHandler(webapp2.RequestHandler):
 				pass
 
 			i.delete()
+
+		box_query = CovertBox.query(filters=CovertBox.expiry_date > datetime.now())
+		box_list = box_query.fetch()
+
+		page_value = {
+				'list': box_list 
+		}
 
 		page = JINJA_ENVIRONMENT.get_template('pages/gf.html')
 		self.response.out.write(page.render(page_value))
