@@ -145,9 +145,9 @@ class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
 		is_error = False
 		try:
-			self.send_blob(blob_info, save_as=blob_info.filename)
-
 			box_instance = CovertBox.query(CovertBox.blob_key == blob_info.key()).get()
+
+			self.send_blob(blob_info, save_as=box_instance.file_name)
 			if box_instance.one_time:
 				box_instance.expiry_date = datetime.now() - timedelta(hours=25)
 				box_instance.put()
