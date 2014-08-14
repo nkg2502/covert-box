@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 	firenze prototype
 '''
@@ -5,6 +6,7 @@ import os
 import urllib
 import hashlib
 import uuid
+import email.header
 from datetime import datetime
 from datetime import timedelta 
 
@@ -82,13 +84,11 @@ your message: {}
 			box_instance = CovertBox(parent=ndb.Key('retrieval_key', str(retrieval_key)))
 
 			file_name = f.filename
-			try:
-				encoded_str = email.header.decode_header(box_instance.file_name)
+			
+			encoded_str = email.header.decode_header(box_instance.file_name)
 
-				if not encoded_str[0][1]:
-					file_name = encoded_str[0][0].decode(encoded_str[0][1])
-			except:
-				pass
+			if not encoded_str[0][1]:
+				file_name = encoded_str[0][0].decode(encoded_str[0][1])
 
 			box_instance.blob_key = f.key()
 			box_instance.file_name = file_name
