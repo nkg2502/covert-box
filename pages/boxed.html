@@ -17,7 +17,7 @@
 		<h1>? Covert-Box ?</h1>
 		<p>Boxing Complete!</p>
 		{% for i in uploaded_list %}
-		<p>{{i.name.decode('utf-8')}}</p>
+		<p>{{i.name}}</p>
 		<p>Expire: {{i.expiry_date}}</p>
 		{% endfor %}
 	</div>
