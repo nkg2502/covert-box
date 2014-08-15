@@ -52,10 +52,6 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		one_time = self.request.get('one_time')
 		msg = self.request.get('msg')
 
-		try:
-			msg = base64.decodestring(msg)
-		except binascii.Error:
-			pass
 		
 		redirect_url = '/error'
 		retrieval_key = None
@@ -81,6 +77,13 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 					subject=email_subject)
 
 			message.to = "<" + email_addr + ">"
+
+			msg_body = msg
+			try:
+				msg_body = base64.decodestring(msg_body)
+			except binascii.Error:
+				pass
+
 			message.body = '''Dear You,
 
 http://covert-box.appspot.com/opening
@@ -92,7 +95,7 @@ your message:
 
 Thanks,
 ? Covert-Box ?
-'''.format(user_key, msg)
+'''.format(user_key, msg_body)
 
 		elif '' != user_key: # user_key validation
 
@@ -150,6 +153,12 @@ class DownloadHandler(webapp2.RequestHandler):
 
 		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', str(retrieval_key)), filters=CovertBox.expiry_date > datetime.now())
 		box_list = box_query.fetch()
+
+		for i in box_list:
+			try:
+				i.msg = base64.decodestring(i.msg)
+			except binascii.Error:
+				pass
 
 		page_value = {
 				'list': box_list,
