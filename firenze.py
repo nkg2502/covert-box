@@ -159,12 +159,11 @@ class DownloadHandler(webapp2.RequestHandler):
 
 		for i in box_list:
 			try:
-				i.msg = base64.decodestring(i.msg)
+				i.msg = base64.decodestring(str(i.msg))
 			except google.appengine.ext.db.BadValueError:
 				i.msg = str(i.msg)
 			except UnicodeEncodeError:
 				i.msg = i.msg.encode('utf-8')
-				pass
 			except binascii.Error:
 				pass
 
