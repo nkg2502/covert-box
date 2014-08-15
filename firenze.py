@@ -7,6 +7,8 @@ import urllib
 import hashlib
 import uuid
 import email.header
+import base64
+import binascii
 from datetime import datetime
 from datetime import timedelta 
 
@@ -130,6 +132,12 @@ class DownloadHandler(webapp2.RequestHandler):
 
 		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', str(retrieval_key)), filters=CovertBox.expiry_date > datetime.now())
 		box_list = box_query.fetch()
+
+		for i in box_list:
+			try:
+				i.msg = base64.decodestring(i.msg)
+			except binascii.Error:
+				pass
 
 		page_value = {
 				'list': box_list,
