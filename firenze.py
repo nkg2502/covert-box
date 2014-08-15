@@ -70,7 +70,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 				email_subject = '{} files have'.format(len(upload_files))
 			else:
 				email_subject = 'A file has'
-			email_subject = ' been uploaded!'
+			email_subject += ' been uploaded!'
 
 			message = mail.EmailMessage(
 					sender="? Covert-Box ?<covert-box@appspot.gserviceaccount.com>",
@@ -86,7 +86,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 			message.body = '''Dear You,
 
-Download Page Link:
+Download Link:
     http://covert-box.appspot.com/opening
 
 Retrieval Key:
