@@ -51,6 +51,11 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		email_addr = self.request.get('email')
 		one_time = self.request.get('one_time')
 		msg = self.request.get('msg')
+
+		try:
+			msg = base64.decodestring(msg)
+		except binascii.Error:
+			pass
 		
 		redirect_url = '/error'
 		retrieval_key = None
@@ -64,17 +69,30 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 			salt = hashlib.sha512(user_key + user_key).hexdigest()
 			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
 
+			email_subject = ''
+			if 1 > len(upload_files):
+				email_subject = '{} files have'.format(len(upload_files))
+			else:
+				email_subject = 'A file has'
+			email_subject = ' been uploaded!'
+
 			message = mail.EmailMessage(
 					sender="? Covert-Box ?<covert-box@appspot.gserviceaccount.com>",
-					subject='"{}" has been uploaded'.format(upload_files[0].filename))
+					subject=email_subject)
 
 			message.to = "<" + email_addr + ">"
-			message.body = """Dear You,
+			message.body = '''Dear You,
+
+http://covert-box.appspot.com/opening
+
 retrieval key: {}
 
-your message: {}
+your message:
+    {}
+
+Thanks,
 ? Covert-Box ?
-""".format(user_key, msg)
+'''.format(user_key, msg)
 
 		elif '' != user_key: # user_key validation
 
@@ -132,12 +150,6 @@ class DownloadHandler(webapp2.RequestHandler):
 
 		box_query = CovertBox.query(ancestor=ndb.Key('retrieval_key', str(retrieval_key)), filters=CovertBox.expiry_date > datetime.now())
 		box_list = box_query.fetch()
-
-		for i in box_list:
-			try:
-				i.msg = base64.decodestring(i.msg)
-			except binascii.Error:
-				pass
 
 		page_value = {
 				'list': box_list,
