@@ -21,6 +21,8 @@ from google.appengine.ext.webapp import blobstore_handlers
 
 from google.appengine.api import mail
 
+import google.appengine.ext.db 
+
 import webapp2
 import jinja2
 
@@ -159,6 +161,11 @@ class DownloadHandler(webapp2.RequestHandler):
 		for i in box_list:
 			try:
 				i.msg = base64.decodestring(i.msg)
+			except google.appengine.ext.db.BadValueError:
+				i.msg = base64.decodestring(unicode(i.msg))
+			except UnicodeEncodeError:
+				i.msg = i.msg.encode('utf-8')
+				pass
 			except binascii.Error:
 				pass
 
