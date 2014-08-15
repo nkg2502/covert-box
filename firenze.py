@@ -161,7 +161,7 @@ class DownloadHandler(webapp2.RequestHandler):
 			try:
 				i.msg = base64.decodestring(i.msg)
 			except google.appengine.ext.db.BadValueError:
-				i.msg = str(i.msg) + 'bve'
+				i.msg = i.msg.encode('utf-8') + 'bve'
 			except UnicodeEncodeError:
 				i.msg = i.msg.encode('utf-8') + 'uee'
 			except binascii.Error:
