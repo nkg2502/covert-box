@@ -118,6 +118,10 @@ Thanks,
 
 			box_instance.blob_key = f.key()
 			box_instance.file_name = file_name
+			try:
+				msg = unicode(msg, 'euc-kr').encode('utf-8')
+			except UnicodeDecodeError:
+				pass
 			box_instance.msg = msg
 			box_instance.one_time = True if one_time else False
 			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
@@ -161,7 +165,7 @@ class DownloadHandler(webapp2.RequestHandler):
 			try:
 				i.msg = base64.decodestring(i.msg)
 			except google.appengine.ext.db.BadValueError:
-				i.msg = base64.decodestring(i.msg.encode('utf-8'))
+				i.msg = i.msg + 'bve'
 			except UnicodeEncodeError:
 				i.msg = i.msg.encode('utf-8') + 'uee'
 			except binascii.Error:
