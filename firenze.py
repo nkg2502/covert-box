@@ -118,10 +118,14 @@ Thanks,
 
 			box_instance.blob_key = f.key()
 			box_instance.file_name = file_name
+
 			try:
 				msg = unicode(msg, 'euc-kr').encode('utf-8')
 			except UnicodeDecodeError:
 				pass
+			except TypeError:
+				pass
+
 			box_instance.msg = msg
 			box_instance.one_time = True if one_time else False
 			box_instance.expiry_date = datetime.now() + timedelta(hours=24)
