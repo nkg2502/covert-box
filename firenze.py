@@ -53,7 +53,6 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		email_addr = self.request.get('email')
 		one_time = self.request.get('one_time')
 		msg = self.request.get('msg')
-
 		
 		redirect_url = '/error'
 		retrieval_key = None
@@ -68,7 +67,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 			retrieval_key = hashlib.sha512(salt + user_key + salt).hexdigest()
 
 			email_subject = ''
-			if 1 > len(upload_files):
+			if 1 < len(upload_files):
 				email_subject = '{} files have'.format(len(upload_files))
 			else:
 				email_subject = 'A file has'
