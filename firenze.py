@@ -86,11 +86,13 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 			message.body = '''Dear You,
 
-http://covert-box.appspot.com/opening
+Download Page Link:
+    http://covert-box.appspot.com/opening
 
-retrieval key: {}
+Retrieval Key:
+    {}
 
-your message:
+Your Messages:
     {}
 
 Thanks,
